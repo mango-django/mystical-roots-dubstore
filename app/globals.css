@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0b0b0b; /* deep black */
+  color: #f5f5f5; /* near-white text */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Make links visible by default */
+a {
+  color: #f5f5f5;
+}
+
+/* ---------- TYPOGRAPHY SYSTEM ---------- */
+
+h1 {
+  @apply text-2xl sm:text-3xl font-semibold tracking-widest uppercase;
+}
+
+h2 {
+  @apply text-xl sm:text-2xl font-semibold tracking-wide uppercase;
+}
+
+h3 {
+  @apply text-lg font-semibold tracking-wide;
+}
+
+p {
+  @apply text-sm sm:text-base text-neutral-300 leading-relaxed;
+}
+
+small,
+.meta {
+  @apply text-xs text-neutral-400;
+}
+
+/* ---------- LINKS ---------- */
+
+a {
+  @apply text-neutral-200 hover:text-white transition;
+}
+
+/* ---------- SURFACES ---------- */
+
+.surface {
+  @apply bg-neutral-900 border border-neutral-800 rounded-lg;
+}
+
+.surface-hover {
+  @apply hover:bg-neutral-800 transition;
+}
+
+
+/* ---------- BUTTONS ---------- */
+
+.btn {
+  @apply px-4 py-2 text-xs rounded
+         border border-neutral-600
+         text-white
+         hover:bg-neutral-800
+         transition;
+}
+
+.btn-disabled {
+  @apply opacity-40 cursor-not-allowed;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out;
 }
