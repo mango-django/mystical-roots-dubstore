@@ -85,11 +85,12 @@ export default function WaveformPlayer({
     });
 
     return () => {
+      const current = waveSurferRef.current;
+      if (!current) return;
+
       try {
-        if (waveSurferRef.current && !waveSurferRef.current.isDestroyed()) {
-          waveSurferRef.current.pause();
-          waveSurferRef.current.destroy();
-        }
+        current.pause();
+        current.destroy();
       } catch {
         // swallow AbortError (dev / strict mode)
       } finally {
