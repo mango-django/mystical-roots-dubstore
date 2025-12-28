@@ -61,12 +61,7 @@ const artists = [
     bio:
       "Marky Roots, co-founder of Mystical Roots Warrior, has always carried the mission of unity and upliftment through music. Growing up in South London with reggae running through his veins, he blended urban realities with ancestral echoes to create soundscapes that are both grounded and divine.\n\nKnown for his powerful rhythms and roots-heavy productions, Marky's beats are the foundation on which many MRW tracks are built. His dedication behind the scenes as a producer, engineer, and creative guide has helped shape the direction of the collective and elevate the voice of the community.\n\nMore than an artist, Marky is a movement architect. With collaborations reaching into Channel One Sound System, Barry Issacs, and the Twinkle Brothers network, his impact is felt both musically and culturally. He continues to drive Mystical Roots Warrior as a platform for truth, spiritual resistance, and authentic roots revival.",
   },
-  {
-    name: "General",
-    slug: "general",
-    hero_image: "/artists/general.jpg",
-    bio: "Bio coming soon.",
-  },
+  
   {
     name: "Melody Ca",
     slug: "melody-ca",

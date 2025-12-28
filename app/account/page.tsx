@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+export const dynamic = "force-dynamic";
+
+import { Suspense, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/components/CartContext";
@@ -11,7 +13,7 @@ type PurchasedTrack = {
   file_path: string;
 };
 
-export default function AccountPage() {
+function AccountContent() {
   const [tracks, setTracks] = useState<PurchasedTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -105,5 +107,13 @@ export default function AccountPage() {
         </div>
       ))}
     </main>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<p className="p-6">Loading…</p>}>
+      <AccountContent />
+    </Suspense>
   );
 }

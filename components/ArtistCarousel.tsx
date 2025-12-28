@@ -5,7 +5,6 @@ const artists = [
   { name: "David Knotts", image: "/artists/david-knotts.jpg" },
   { name: "Eli Hakema", image: "/artists/eli-hakema.jpg" },
   { name: "Ezy Star", image: "/artists/ezy-star.jpg" },
-  { name: "General", image: "/artists/general.jpg" },
   { name: "Jah Mirikle", image: "/artists/jah-mirikle.jpg" },
   { name: "Marky Roots", image: "/artists/marky-roots.jpg" },
   { name: "Me Ca Melody", image: "/artists/me-ca-melody.jpg" },
