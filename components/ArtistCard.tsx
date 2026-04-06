@@ -10,7 +10,7 @@ export default function ArtistCard({ name, slug, hero_image }: Artist) {
   return (
     <Link
       href={`/artists/${slug}`}
-      className="group relative block aspect-square overflow-hidden bg-neutral-900"
+      className="group relative block aspect-square overflow-hidden rounded-xl bg-neutral-900"
     >
       <img
         src={hero_image}
@@ -18,11 +18,12 @@ export default function ArtistCard({ name, slug, hero_image }: Artist) {
         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
 
-      <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/70 to-transparent">
-        <h2 className="uppercase tracking-widest text-sm sm:text-base">
-
-          {name}
-        </h2>
+      <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent flex items-end p-5">
+        <div>
+          <h2 className="text-base sm:text-lg font-semibold uppercase tracking-wider text-white">
+            {name}
+          </h2>
+        </div>
       </div>
     </Link>
   );

@@ -12,30 +12,24 @@ export default function AuthPage() {
   async function handleSignUp() {
     setLoading(true);
     setMessage(null);
-
     const { error } = await signUp(email, password);
-
     if (error) {
       setMessage(error.message);
     } else {
       setMessage("Sign up successful. Check your email if confirmation is enabled.");
     }
-
     setLoading(false);
   }
 
   async function handleSignIn() {
     setLoading(true);
     setMessage(null);
-
     const { error } = await signIn(email, password);
-
     if (error) {
       setMessage(error.message);
     } else {
       setMessage("Signed in successfully.");
     }
-
     setLoading(false);
   }
 
@@ -46,17 +40,24 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="space-y-4 w-80">
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <div className="space-y-5 w-full max-w-sm">
+        <div className="text-center space-y-1 mb-2">
+          <h2 className="text-2xl">Account</h2>
+          <p className="text-xs text-neutral-500">
+            Sign in or create an account
+          </p>
+        </div>
+
         <input
-          className="w-full p-2 bg-neutral-900 border border-neutral-700"
+          className="input"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          className="w-full p-2 bg-neutral-900 border border-neutral-700"
+          className="input"
           type="password"
           placeholder="Password"
           value={password}
@@ -64,7 +65,7 @@ export default function AuthPage() {
         />
 
         <button
-          className="w-full bg-white text-black py-2 disabled:opacity-50"
+          className="btn-primary w-full"
           disabled={loading}
           onClick={handleSignUp}
         >
@@ -72,7 +73,7 @@ export default function AuthPage() {
         </button>
 
         <button
-          className="w-full border border-white py-2 disabled:opacity-50"
+          className="btn w-full"
           disabled={loading}
           onClick={handleSignIn}
         >
@@ -80,16 +81,14 @@ export default function AuthPage() {
         </button>
 
         <button
-          className="w-full text-sm opacity-60"
+          className="w-full text-xs text-neutral-500 hover:text-white transition-colors py-2"
           onClick={handleSignOut}
         >
           Sign Out
         </button>
 
         {message && (
-          <p className="text-sm text-center opacity-70">
-            {message}
-          </p>
+          <p className="text-sm text-center text-neutral-400">{message}</p>
         )}
       </div>
     </main>

@@ -31,13 +31,9 @@ export default function TrackSheet({
   const [volume, setVolume] = useState(0.8);
   const [ready, setReady] = useState(false);
 
-  /* =============================
-     BUILD PREVIEW URL
-  ============================= */
-  const previewUrl =
-    track?.preview_path
-      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/previews/${track.preview_path}`
-      : null;
+  const previewUrl = track?.preview_path
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/previews/${track.preview_path}`
+    : null;
 
   function getCoverUrl(coverPath: string) {
     if (/^https?:\/\//i.test(coverPath)) return coverPath;
@@ -45,91 +41,69 @@ export default function TrackSheet({
     return `${supabaseUrl}/storage/v1/object/public/covers/${normalized}`;
   }
 
-  /* =============================
-     INIT WAVESURFER
-  ============================= */
   useEffect(() => {
-  if (!previewUrl || !waveformRef.current) return;
+    if (!previewUrl || !waveformRef.current) return;
 
-  // ✅ CLEAR OLD WAVEFORM DOM
-  waveformRef.current.innerHTML = "";
+    waveformRef.current.innerHTML = "";
 
-  if (waveSurfer.current) return;
+    if (waveSurfer.current) return;
 
-  const ws = WaveSurfer.create({
-    container: waveformRef.current,
-    waveColor: "#555",
-    progressColor: "#fff",
-    cursorColor: "#fff",
-    barWidth: 2,
-    barRadius: 2,
-    height: 48,
-    normalize: true,
-  });
+    const ws = WaveSurfer.create({
+      container: waveformRef.current,
+      waveColor: "#444",
+      progressColor: "#fff",
+      cursorColor: "#fff",
+      barWidth: 2,
+      barRadius: 3,
+      barGap: 1,
+      height: 48,
+      normalize: true,
+    });
 
-  waveSurfer.current = ws;
-  ws.setVolume(volume);
+    waveSurfer.current = ws;
+    ws.setVolume(volume);
 
-  ws.on("ready", () => setReady(true));
-  ws.on("finish", () => setPlaying(false));
+    ws.on("ready", () => setReady(true));
+    ws.on("finish", () => setPlaying(false));
 
-  try {
-    ws.load(previewUrl);
-  } catch {}
-
-  return () => {
     try {
-      ws.stop();
+      ws.load(previewUrl);
     } catch {}
 
-    waveSurfer.current = null;
-    setReady(false);
-    setPlaying(false);
-  };
-}, [previewUrl]);
+    return () => {
+      try {
+        ws.stop();
+      } catch {}
+      waveSurfer.current = null;
+      setReady(false);
+      setPlaying(false);
+    };
+  }, [previewUrl]);
 
-
-
-
-  /* =============================
-     PLAY / PAUSE
-  ============================= */
   function togglePlay() {
     if (!waveSurfer.current || !ready) return;
     waveSurfer.current.playPause();
     setPlaying(waveSurfer.current.isPlaying());
   }
 
-  /* =============================
-     VOLUME
-  ============================= */
   function handleVolume(v: number) {
     setVolume(v);
     waveSurfer.current?.setVolume(v);
   }
 
-  /* =============================
-     CLOSE
-  ============================= */
   function handleClose() {
     waveSurfer.current?.stop();
     setPlaying(false);
     onClose();
   }
 
-  /* =============================
-     ADD TO CART
-  ============================= */
   function handleAddToCart() {
     if (!track) return;
-
     addItem({
       id: track.id,
       title: track.title,
       price: track.price / 100,
-      image: track.cover_path
-        ? getCoverUrl(track.cover_path)
-        : undefined,
+      image: track.cover_path ? getCoverUrl(track.cover_path) : undefined,
       type: "track",
     });
   }
@@ -140,20 +114,18 @@ export default function TrackSheet({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 z-40"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
         onClick={handleClose}
       />
 
       {/* Sheet */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-neutral-900 border-t border-neutral-800 rounded-t-xl">
-        <div className="max-w-5xl mx-auto p-6 space-y-4">
-
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-neutral-900 border-t border-neutral-800/60 rounded-t-2xl animate-slideUp">
+        <div className="max-w-5xl mx-auto p-5 sm:p-6 space-y-4">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex gap-4 items-start">
-              
-              {/* COVER THUMBNAIL (ALWAYS SMALL) */}
-              <div className="w-16 h-16 shrink-0 rounded overflow-hidden bg-neutral-800">
+              {/* Cover thumbnail */}
+              <div className="w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-neutral-800">
                 {track.cover_path ? (
                   <img
                     src={getCoverUrl(track.cover_path)}
@@ -161,69 +133,63 @@ export default function TrackSheet({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-neutral-500">
+                  <div className="w-full h-full flex items-center justify-center text-xs text-neutral-600">
                     No cover
                   </div>
                 )}
               </div>
 
-              {/* Info */}
               <div>
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-base sm:text-lg font-semibold">
                   {track.title}
                 </h2>
-                <p className="text-sm text-neutral-400">
-                  {track.artist}
-                </p>
+                <p className="text-sm text-neutral-500">{track.artist}</p>
               </div>
             </div>
 
             <button
               onClick={handleClose}
-              className="text-neutral-400 hover:text-white"
+              className="text-neutral-500 hover:text-white transition-colors p-1"
             >
-              ✕
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
 
           {/* Waveform */}
-          <div ref={waveformRef} />
+          <div ref={waveformRef} className="rounded-lg overflow-hidden" />
 
           {/* Controls */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 flex-wrap">
             <button
               onClick={togglePlay}
-              className="btn"
+              className="btn-primary"
               disabled={!ready}
             >
               {playing ? "Pause" : "Play"}
             </button>
 
-            <button
-              onClick={handleAddToCart}
-              className="btn btn-outline"
-            >
+            <button onClick={handleAddToCart} className="btn">
               Add to Cart
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-neutral-400">
-                Vol
-              </span>
+              <span className="text-xs text-neutral-500">Vol</span>
               <input
                 type="range"
                 min={0}
                 max={1}
                 step={0.01}
                 value={volume}
-                onChange={(e) =>
-                  handleVolume(Number(e.target.value))
-                }
+                onChange={(e) => handleVolume(Number(e.target.value))}
+                className="w-20 accent-white"
               />
             </div>
 
-            <div className="ml-auto text-sm">
-              £{(track.price / 100).toFixed(2)} · {track.format.toUpperCase()}
+            <div className="ml-auto text-sm text-neutral-400">
+              &pound;{(track.price / 100).toFixed(2)} &middot;{" "}
+              {track.format.toUpperCase()}
             </div>
           </div>
         </div>

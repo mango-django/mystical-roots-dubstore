@@ -22,9 +22,6 @@ function AccountContent() {
   const { clearCartOnLogout } = useCart();
   const hasHandledSuccess = useRef(false);
 
-  /* =============================
-     HANDLE SUCCESS REDIRECT
-  ============================= */
   useEffect(() => {
     if (
       searchParams.get("success") === "1" &&
@@ -37,9 +34,6 @@ function AccountContent() {
     }
   }, [searchParams, clearCartOnLogout]);
 
-  /* =============================
-     LOAD PURCHASED TRACKS
-  ============================= */
   useEffect(() => {
     async function loadPurchases() {
       const { data, error } = await supabase
@@ -50,69 +44,83 @@ function AccountContent() {
       if (!error && data) {
         setTracks(data);
       }
-
       setLoading(false);
     }
-
     loadPurchases();
   }, []);
 
-  if (loading) return <p className="p-6">Loading…</p>;
+  if (loading) {
+    return (
+      <div className="page-container page-header">
+        <p className="text-neutral-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
-    <main className="p-4 sm:p-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="uppercase tracking-widest text-xl border-b border-neutral-700 pb-2">
-        Your Purchases
-      </h1>
-
-      {showSuccess && (
-        <div className="border border-green-600 bg-green-600/10 p-4 text-sm">
-          ✅ Payment successful. Your purchase is complete.
-        </div>
-      )}
-
-      {tracks.length === 0 && (
-        <p className="text-sm text-neutral-400">
-          No purchases yet.
+    <main className="page-container">
+      <div className="page-header">
+        <p className="text-xs font-medium uppercase tracking-widest text-neutral-500 mb-2">
+          Your Library
         </p>
-      )}
+        <h1>Purchases</h1>
+      </div>
 
-      {tracks.map((track) => (
-        <div key={track.id} className="surface p-4 space-y-2">
-          <h3>{track.title}</h3>
+      <div className="max-w-2xl space-y-5 pb-16">
+        {showSuccess && (
+          <div className="border border-green-600/40 bg-green-600/10 p-4 rounded-xl text-sm text-green-400">
+            Payment successful. Your purchase is complete.
+          </div>
+        )}
 
-          <button
-  className="btn"
-  onClick={async () => {
-    const res = await fetch("/api/download", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filePath: track.file_path }),
-    });
+        {tracks.length === 0 && (
+          <p className="text-sm text-neutral-500">No purchases yet.</p>
+        )}
 
-    const data = await res.json();
+        {tracks.map((track) => (
+          <div
+            key={track.id}
+            className="surface p-5 flex items-center justify-between gap-4"
+          >
+            <h3 className="text-sm font-medium">{track.title}</h3>
 
-    if (!res.ok || !data.url) {
-      alert("Download failed");
-      return;
-    }
+            <button
+              className="btn shrink-0"
+              onClick={async () => {
+                const res = await fetch("/api/download", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ filePath: track.file_path }),
+                });
 
-    window.location.href = data.url;
-  }}
->
-  Download
-</button>
+                const data = await res.json();
 
+                if (!res.ok || !data.url) {
+                  alert("Download failed");
+                  return;
+                }
 
-        </div>
-      ))}
+                window.location.href = data.url;
+              }}
+            >
+              Download
+            </button>
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
 
 export default function AccountPage() {
   return (
-    <Suspense fallback={<p className="p-6">Loading…</p>}>
+    <Suspense
+      fallback={
+        <div className="page-container page-header">
+          <p className="text-neutral-500 text-sm">Loading...</p>
+        </div>
+      }
+    >
       <AccountContent />
     </Suspense>
   );

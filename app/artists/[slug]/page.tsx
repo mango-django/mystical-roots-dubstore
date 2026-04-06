@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -61,7 +62,6 @@ const artists = [
     bio:
       "Marky Roots, co-founder of Mystical Roots Warrior, has always carried the mission of unity and upliftment through music. Growing up in South London with reggae running through his veins, he blended urban realities with ancestral echoes to create soundscapes that are both grounded and divine.\n\nKnown for his powerful rhythms and roots-heavy productions, Marky's beats are the foundation on which many MRW tracks are built. His dedication behind the scenes as a producer, engineer, and creative guide has helped shape the direction of the collective and elevate the voice of the community.\n\nMore than an artist, Marky is a movement architect. With collaborations reaching into Channel One Sound System, Barry Issacs, and the Twinkle Brothers network, his impact is felt both musically and culturally. He continues to drive Mystical Roots Warrior as a platform for truth, spiritual resistance, and authentic roots revival.",
   },
-  
   {
     name: "Melody Ca",
     slug: "melody-ca",
@@ -72,7 +72,6 @@ const artists = [
 
 export default async function ArtistProfilePage({ params }: Props) {
   const { slug } = await params;
-
   const artist = artists.find((entry) => entry.slug === slug);
 
   if (!artist) {
@@ -80,12 +79,23 @@ export default async function ArtistProfilePage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen">
-      <section className="max-w-5xl mx-auto p-4 sm:p-6">
-        <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+    <main className="page-container">
+      {/* Back link */}
+      <div className="pt-20 sm:pt-24 pb-4">
+        <Link
+          href="/artists"
+          className="text-xs uppercase tracking-widest text-neutral-500 hover:text-white transition-colors"
+        >
+          &larr; All Artists
+        </Link>
+      </div>
+
+      <section className="pb-16">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-14">
+          {/* Image */}
           {artist.hero_image && (
-            <div className="w-full md:w-auto">
-              <div className="relative w-full md:w-[600px] h-[320px] md:h-[600px] bg-neutral-900 overflow-hidden">
+            <div className="w-full lg:w-auto shrink-0">
+              <div className="relative w-full lg:w-[520px] aspect-3/4 bg-neutral-900 overflow-hidden rounded-xl">
                 <img
                   src={artist.hero_image}
                   alt={artist.name}
@@ -95,15 +105,28 @@ export default async function ArtistProfilePage({ params }: Props) {
             </div>
           )}
 
-          <div className="flex-1 space-y-4">
-            <h1 className="text-2xl md:text-3xl uppercase tracking-widest">
-              {artist.name}
-            </h1>
+          {/* Bio */}
+          <div className="flex-1 space-y-5 py-2">
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">
+                Artist Profile
+              </p>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl">
+                {artist.name}
+              </h1>
+            </div>
 
             {artist.bio && (
-              <p className="leading-relaxed text-sm sm:text-base opacity-80 whitespace-pre-line">
-                {artist.bio}
-              </p>
+              <div className="space-y-4">
+                {artist.bio.split("\n\n").map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className="leading-relaxed text-sm sm:text-base text-neutral-300"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             )}
           </div>
         </div>

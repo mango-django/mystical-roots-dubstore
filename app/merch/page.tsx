@@ -24,24 +24,16 @@ export default function MerchPage() {
 
   const [products, setProducts] = useState<MerchProduct[]>([]);
   const [variants, setVariants] = useState<MerchVariant[]>([]);
-  const [selectedColour, setSelectedColour] =
-    useState<Record<string, string>>({});
-  const [selectedSize, setSelectedSize] =
-    useState<Record<string, string>>({});
+  const [selectedColour, setSelectedColour] = useState<Record<string, string>>({});
+  const [selectedSize, setSelectedSize] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadMerch();
   }, []);
 
   async function loadMerch() {
-    const { data: products } = await supabase
-      .from("merch_products")
-      .select("*");
-
-    const { data: variants } = await supabase
-      .from("merch_variants")
-      .select("*");
-
+    const { data: products } = await supabase.from("merch_products").select("*");
+    const { data: variants } = await supabase.from("merch_variants").select("*");
     setProducts(products || []);
     setVariants(variants || []);
   }
@@ -92,35 +84,30 @@ export default function MerchPage() {
   }
 
   return (
-    <main className="p-6 max-w-7xl mx-auto space-y-10">
-      <h1 className="uppercase tracking-widest text-xl">
-        Merch
-      </h1>
+    <main className="page-container">
+      <div className="page-header">
+        <p className="text-xs font-medium uppercase tracking-widest text-neutral-500 mb-2">
+          Wear the Culture
+        </p>
+        <h1>Merch</h1>
+      </div>
 
       {products.length === 0 && (
-        <p className="text-sm text-neutral-400">
-          No merch available yet.
-        </p>
+        <p className="text-sm text-neutral-500">No merch available yet.</p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {products.map((product) => {
           const productVariants = getVariants(product.id);
-
-          const colours = Array.from(
-            new Set(productVariants.map((v) => v.colour))
-          );
-
-          const sizes = Array.from(
-            new Set(productVariants.map((v) => v.size))
-          );
+          const colours = Array.from(new Set(productVariants.map((v) => v.colour)));
+          const sizes = Array.from(new Set(productVariants.map((v) => v.size)));
 
           return (
             <div
               key={product.id}
-              className="bg-neutral-900 border border-neutral-800 p-4 space-y-4"
+              className="bg-neutral-900/80 border border-neutral-800 rounded-xl overflow-hidden"
             >
-              {/* IMAGE */}
+              {/* Product image */}
               <div className="aspect-square bg-neutral-800 overflow-hidden">
                 {product.image_path && (
                   <img
@@ -131,79 +118,75 @@ export default function MerchPage() {
                 )}
               </div>
 
-              {/* TITLE */}
-              <h2 className="font-medium">{product.title}</h2>
+              {/* Details */}
+              <div className="p-5 space-y-4">
+                <h2 className="text-base font-semibold">{product.title}</h2>
 
-              {/* VARIANT SELECT */}
-              <div className="space-y-2 text-sm">
-                {/* COLOUR */}
-                <select
-                  className="w-full bg-neutral-800 border border-neutral-700 p-2"
-                  value={selectedColour[product.id] ?? ""}
-                  onChange={(e) => {
-                    const colour = e.target.value;
-                    setSelectedColour((prev) => ({
-                      ...prev,
-                      [product.id]: colour,
-                    }));
-                  }}
-                >
-                  <option value="" disabled>
-                    Select colour
-                  </option>
-                  {colours.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                {/* Variant selectors */}
+                <div className="space-y-2.5">
+                  <select
+                    className="input"
+                    value={selectedColour[product.id] ?? ""}
+                    onChange={(e) =>
+                      setSelectedColour((prev) => ({
+                        ...prev,
+                        [product.id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="" disabled>
+                      Select colour
                     </option>
-                  ))}
-                </select>
+                    {colours.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
 
-                {/* SIZE */}
-                <select
-                  className="w-full bg-neutral-800 border border-neutral-700 p-2"
-                  value={selectedSize[product.id] ?? ""}
-                  onChange={(e) => {
-                    const size = e.target.value;
-                    setSelectedSize((prev) => ({
-                      ...prev,
-                      [product.id]: size,
-                    }));
-                  }}
-                >
-                  <option value="" disabled>
-                    Select size
-                  </option>
-                  {sizes.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                  <select
+                    className="input"
+                    value={selectedSize[product.id] ?? ""}
+                    onChange={(e) =>
+                      setSelectedSize((prev) => ({
+                        ...prev,
+                        [product.id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="" disabled>
+                      Select size
                     </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* PRICE */}
-              {selectedColour[product.id] &&
-                selectedSize[product.id] && (
-                <div className="text-sm">
-                  £
-                  {(
-                    (variants.find(
-                      (v) =>
-                        v.product_id === product.id &&
-                        v.colour === selectedColour[product.id] &&
-                        v.size === selectedSize[product.id]
-                    )?.price ?? 0) / 100
-                  ).toFixed(2)}
+                    {sizes.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
 
-              {/* ADD TO CART */}
-              <button
-                className="btn w-full"
-                onClick={() => handleAddToCart(product)}
-              >
-                Add to Cart
-              </button>
+                {/* Price display */}
+                {selectedColour[product.id] && selectedSize[product.id] && (
+                  <div className="text-lg font-semibold">
+                    &pound;
+                    {(
+                      (variants.find(
+                        (v) =>
+                          v.product_id === product.id &&
+                          v.colour === selectedColour[product.id] &&
+                          v.size === selectedSize[product.id]
+                      )?.price ?? 0) / 100
+                    ).toFixed(2)}
+                  </div>
+                )}
+
+                <button
+                  className="btn-primary w-full"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           );
         })}
