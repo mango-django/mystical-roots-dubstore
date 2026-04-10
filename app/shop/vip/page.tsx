@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { openTrackSheet } from "@/lib/openTrackSheet";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type Track = {
   id: string;
@@ -17,12 +17,14 @@ type Track = {
   top10_position: number | null;
   is_hero: boolean;
   is_release: boolean;
+  is_exclusive: boolean;
 };
 
-export default function ShopPage() {
+function VipContent() {
   const [hero, setHero] = useState<Track | null>(null);
   const [top10, setTop10] = useState<Track[]>([]);
   const [releases, setReleases] = useState<Track[]>([]);
+  const [all, setAll] = useState<Track[]>([]);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   function getCoverUrl(coverPath: string) {
@@ -36,7 +38,7 @@ export default function ShopPage() {
       const { data } = await supabase
         .from("tracks")
         .select("*")
-        .eq("is_exclusive", false);
+        .eq("is_exclusive", true);
       if (!data) return;
 
       setHero(data.find((t) => t.is_hero) ?? null);
@@ -49,6 +51,7 @@ export default function ShopPage() {
       );
 
       setReleases(data.filter((t) => t.is_release).slice(0, 10));
+      setAll(data);
     }
     load();
   }, []);
@@ -56,35 +59,14 @@ export default function ShopPage() {
   return (
     <main className="page-container">
       <div className="page-header">
-        <p className="text-xs font-medium uppercase tracking-widest text-neutral-500 mb-2">
-          Browse & Preview
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-400/90 mb-2">
+          Members Only
         </p>
-        <h1>Dub Store</h1>
+        <h1>Exclusive Dub Section</h1>
+        <p className="text-sm text-neutral-400 mt-2">
+          Unreleased mixes and exclusive dubs for registered members
+        </p>
       </div>
-
-      {/* ===== VIP DUB SECTION BANNER ===== */}
-      <Link
-        href="/shop/vip"
-        className="block relative overflow-hidden rounded-xl border border-neutral-700/50 bg-gradient-to-r from-neutral-900 via-neutral-800/80 to-neutral-900 p-6 sm:p-8 mb-8 group hover:border-neutral-600 transition-all duration-300"
-      >
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-400/90 mb-1">
-              Members Only
-            </p>
-            <h2 className="text-lg sm:text-xl font-bold text-white">
-              Exclusive Dub Section
-            </h2>
-            <p className="text-sm text-neutral-400 mt-1">
-              Sign up free to access exclusive dubs and unreleased mixes
-            </p>
-          </div>
-          <span className="text-neutral-500 group-hover:text-white group-hover:translate-x-1 transition-all duration-300 text-2xl">
-            &rarr;
-          </span>
-        </div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
-      </Link>
 
       {/* ===== TOP SECTION: Hero + Top 10 ===== */}
       <section className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
@@ -113,9 +95,11 @@ export default function ShopPage() {
           {hero && (
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent p-6 sm:p-8 flex items-end">
               <div className="space-y-1">
-                <p className="text-xs uppercase tracking-widest text-neutral-400">
-                  Featured Track
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs uppercase tracking-widest text-amber-400/80">
+                    Exclusive
+                  </p>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-semibold">
                   {hero.title}
                 </h2>
@@ -130,7 +114,7 @@ export default function ShopPage() {
         {/* TOP 10 SIDEBAR */}
         <aside className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-5">
           <h2 className="uppercase tracking-widest text-xs text-neutral-500 mb-5">
-            Top Mixes
+            Top Exclusive Mixes
           </h2>
 
           <ol className="space-y-1">
@@ -169,10 +153,10 @@ export default function ShopPage() {
         </aside>
       </section>
 
-      {/* ===== NEW RELEASES ===== */}
+      {/* ===== NEW EXCLUSIVE RELEASES ===== */}
       <section className="page-section">
         <h2 className="uppercase tracking-widest text-xs text-neutral-500 mb-5">
-          New Releases
+          Exclusive Releases
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -214,6 +198,55 @@ export default function ShopPage() {
           })}
         </div>
       </section>
+
+      {/* ===== ALL EXCLUSIVE TRACKS ===== */}
+      {all.length > 0 && (
+        <section className="page-section">
+          <h2 className="uppercase tracking-widest text-xs text-neutral-500 mb-5">
+            All Exclusive Dubs
+          </h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {all.map((track) => (
+              <div
+                key={track.id}
+                onClick={() => openTrackSheet(track)}
+                className="group cursor-pointer bg-neutral-900 rounded-xl overflow-hidden"
+              >
+                <div className="aspect-square overflow-hidden">
+                  {track.cover_path ? (
+                    <img
+                      src={getCoverUrl(track.cover_path)}
+                      alt={track.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <Image
+                      src="/placeholder/thumb.jpg"
+                      alt="Placeholder"
+                      width={400}
+                      height={400}
+                      className="object-cover w-full h-full"
+                    />
+                  )}
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-medium truncate">{track.title}</p>
+                  <p className="text-xs text-neutral-500 truncate">{track.artist}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
+  );
+}
+
+export default function VipShopPage() {
+  return (
+    <ProtectedRoute requireAuth>
+      <VipContent />
+    </ProtectedRoute>
   );
 }

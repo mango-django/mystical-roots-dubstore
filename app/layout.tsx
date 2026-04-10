@@ -11,6 +11,7 @@ import { AudioPlayerProvider } from "@/components/AudioPlayerContext";
 import { CartProvider } from "@/components/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import dynamic from "next/dynamic";
+import { supabase } from "@/lib/supabase/client";
 
 export default function RootLayout({
   children,
@@ -49,6 +50,18 @@ export default function RootLayout({
     }
     document.addEventListener("cart-toast", handleToast);
     return () => document.removeEventListener("cart-toast", handleToast);
+  }, []);
+
+  // Detect Supabase PASSWORD_RECOVERY event and redirect to reset page
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        window.location.href = "/auth/reset-password";
+      }
+    });
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (

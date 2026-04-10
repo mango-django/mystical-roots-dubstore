@@ -7,6 +7,7 @@ type Payload = {
   isHero?: boolean;
   top10Position?: number | null;
   isRelease?: boolean;
+  isExclusive?: boolean;
 };
 
 export async function POST(req: Request) {
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
   }
 
   const payload = (await req.json()) as Payload;
-  const { trackId, isHero, top10Position, isRelease } = payload;
+  const { trackId, isHero, top10Position, isRelease, isExclusive } = payload;
 
   if (!trackId) {
     return NextResponse.json(
@@ -76,6 +77,9 @@ export async function POST(req: Request) {
   }
   if (top10Position !== undefined) {
     updates.top10_position = top10Position;
+  }
+  if (typeof isExclusive === "boolean") {
+    updates.is_exclusive = isExclusive;
   }
 
   if (Object.keys(updates).length === 0) {

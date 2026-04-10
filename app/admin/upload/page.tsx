@@ -98,6 +98,15 @@ export default function AdminUploadPage() {
             className="w-full p-2 bg-neutral-900 border border-neutral-700"
           />
 
+          <label className="flex gap-2 items-center text-sm">
+            <input
+              name="is_exclusive"
+              type="checkbox"
+              className="accent-amber-500"
+            />
+            Exclusive (VIP Dub Section only)
+          </label>
+
           <div>
             <label className="block text-sm mb-1">
               Full track (private)

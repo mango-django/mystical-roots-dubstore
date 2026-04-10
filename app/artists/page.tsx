@@ -2,7 +2,7 @@ import ArtistCard from "@/components/ArtistCard";
 
 const artists = [
   { name: "David Knotts", slug: "david-knotts", hero_image: "/artists/david-knotts.jpg" },
-  { name: "Eli Hakema", slug: "eli-hakema", hero_image: "/artists/eli-hakema.jpg" },
+  { name: "Elli Hakema", slug: "eli-hakema", hero_image: "/artists/eli-hakema.jpg" },
   { name: "Ezy Star", slug: "ezy-star", hero_image: "/artists/ezy-star.jpg" },
   { name: "Jah Mirikle", slug: "jah-mirikle", hero_image: "/artists/jah-mirikle.jpg" },
   { name: "Marky Roots", slug: "marky-roots", hero_image: "/artists/marky-roots.jpg" },

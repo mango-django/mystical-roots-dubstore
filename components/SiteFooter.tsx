@@ -3,8 +3,8 @@
 import Link from "next/link";
 
 const navLinks = [
-  { label: "Dub Store", href: "/shop" },
   { label: "Artists", href: "/artists" },
+  { label: "Music Store", href: "/shop" },
   { label: "Merch", href: "/merch" },
   { label: "Account", href: "/account" },
 ];

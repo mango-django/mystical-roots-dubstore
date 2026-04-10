@@ -23,22 +23,28 @@ export default function SiteHeader({
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium uppercase tracking-wider">
           <Link
-            href="/shop"
-            className="text-neutral-400 hover:text-white transition-colors"
-          >
-            Dub Store
-          </Link>
-          <Link
             href="/artists"
             className="text-neutral-400 hover:text-white transition-colors"
           >
             Artists
           </Link>
           <Link
+            href="/shop"
+            className="text-neutral-400 hover:text-white transition-colors"
+          >
+            Music Store
+          </Link>
+          <Link
             href="/merch"
             className="text-neutral-400 hover:text-white transition-colors"
           >
             Merch
+          </Link>
+          <Link
+            href="/shop/vip"
+            className="text-amber-400/80 hover:text-amber-300 transition-colors"
+          >
+            VIP Dubs
           </Link>
         </nav>
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const artists = [
   { name: "David Knotts", slug: "david-knotts", image: "/artists/david-knotts.jpg" },
-  { name: "Eli Hakema", slug: "eli-hakema", image: "/artists/eli-hakema.jpg" },
+  { name: "Elli Hakema", slug: "eli-hakema", image: "/artists/eli-hakema.jpg" },
   { name: "Ezy Star", slug: "ezy-star", image: "/artists/ezy-star.jpg" },
   { name: "Jah Mirikle", slug: "jah-mirikle", image: "/artists/jah-mirikle.jpg" },
   { name: "Marky Roots", slug: "marky-roots", image: "/artists/marky-roots.jpg" },

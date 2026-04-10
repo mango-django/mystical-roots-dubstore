@@ -47,6 +47,7 @@ export async function POST(req: Request) {
   const price = Number(formData.get("price"));
   const format = (formData.get("format") as string)?.toLowerCase();
   const downloadLimit = Number(formData.get("download_limit") || 3);
+  const isExclusive = formData.get("is_exclusive") === "on";
 
   const fullFile = formData.get("file") as File;
   const previewFile = formData.get("preview") as File;
@@ -146,6 +147,7 @@ export async function POST(req: Request) {
       preview_path: previewPath,
       cover_path: coverPath,
       download_limit: downloadLimit,
+      is_exclusive: isExclusive,
     })
     .select()
     .single();

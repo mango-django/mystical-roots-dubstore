@@ -16,6 +16,7 @@ type Track = {
   is_hero: boolean;
   top10_position: number | null;
   is_release: boolean;
+  is_exclusive: boolean;
   cover_path?: string | null;
 };
 
@@ -42,7 +43,8 @@ export default function AdminTracksPage() {
         created_at,
         is_hero,
         top10_position,
-        is_release
+        is_release,
+        is_exclusive
       `)
       .order("created_at", { ascending: false });
 
@@ -55,6 +57,7 @@ export default function AdminTracksPage() {
     isHero?: boolean;
     top10Position?: number | null;
     isRelease?: boolean;
+    isExclusive?: boolean;
   }) {
     const res = await fetch("/api/admin/update-track-flags", {
       method: "POST",
@@ -204,6 +207,24 @@ export default function AdminTracksPage() {
                           }}
                         />
                         Release
+                      </label>
+
+                      {/* EXCLUSIVE */}
+                      <label className="flex gap-2 items-center text-amber-400/80">
+                        <input
+                          type="checkbox"
+                          checked={track.is_exclusive}
+                          className="accent-amber-500"
+                          onChange={async (e) => {
+                            const ok = await updateTrackFlags({
+                              trackId: track.id,
+                              isExclusive: e.target.checked,
+                            });
+
+                            if (ok) loadTracks();
+                          }}
+                        />
+                        Exclusive
                       </label>
                     </td>
 

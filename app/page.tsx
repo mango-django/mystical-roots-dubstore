@@ -38,7 +38,7 @@ export default function HomePage() {
 
             <div className="flex gap-3 flex-wrap pt-2">
               <Link href="/shop" className="btn-primary">
-                Visit Dub Store
+                Visit Music Store
               </Link>
               <Link href="/artists" className="btn">
                 Meet the Artists

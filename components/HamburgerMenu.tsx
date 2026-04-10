@@ -97,10 +97,13 @@ export default function HamburgerMenu({
               Artists
             </NavLink>
             <NavLink href="/shop" onClick={() => setOpen(false)}>
-              Dub Store
+              Music Store
             </NavLink>
             <NavLink href="/merch" onClick={() => setOpen(false)}>
               Merch
+            </NavLink>
+            <NavLink href="/shop/vip" onClick={() => setOpen(false)}>
+              <span className="text-amber-400/80">VIP Dubs</span>
             </NavLink>
 
             {user && (

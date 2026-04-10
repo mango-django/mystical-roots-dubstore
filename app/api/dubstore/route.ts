@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
@@ -9,7 +9,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const exclusive = req.nextUrl.searchParams.get("exclusive") === "true";
+
   /* =============================
      HERO (SINGLE)
   ============================= */
@@ -24,14 +26,18 @@ export async function GET() {
         price,
         format,
         preview_path,
-        cover_path
+        cover_path,
+        is_exclusive
       )
     `)
     .eq("section_key", "hero")
     .order("position", { ascending: true })
-    .limit(1);
+    .limit(10);
 
-  const hero = heroRows?.[0]?.tracks ?? null;
+  const heroTrack = heroRows
+    ?.map((r) => r.tracks)
+    .filter(Boolean)
+    .find((t: any) => t.is_exclusive === exclusive) ?? null;
 
   /* =============================
      TOP 10
@@ -47,14 +53,17 @@ export async function GET() {
         price,
         format,
         preview_path,
-        cover_path
+        cover_path,
+        is_exclusive
       )
     `)
     .eq("section_key", "top10")
     .order("position", { ascending: true });
 
   const top10 =
-    top10Rows?.map((r) => r.tracks).filter(Boolean) ?? [];
+    top10Rows
+      ?.map((r) => r.tracks)
+      .filter((t: any) => t && t.is_exclusive === exclusive) ?? [];
 
   /* =============================
      RELEASES
@@ -69,14 +78,17 @@ export async function GET() {
         price,
         format,
         preview_path,
-        cover_path
+        cover_path,
+        is_exclusive
       )
     `)
     .eq("section_key", "releases")
     .order("created_at", { ascending: false });
 
   const releases =
-    releaseRows?.map((r) => r.tracks).filter(Boolean) ?? [];
+    releaseRows
+      ?.map((r) => r.tracks)
+      .filter((t: any) => t && t.is_exclusive === exclusive) ?? [];
 
   /* =============================
      ALL TRACKS
@@ -84,12 +96,13 @@ export async function GET() {
   const { data: all } = await supabase
     .from("tracks")
     .select(
-      "id, title, artist, price, format, preview_path, cover_path"
+      "id, title, artist, price, format, preview_path, cover_path, is_exclusive"
     )
+    .eq("is_exclusive", exclusive)
     .order("created_at", { ascending: false });
 
   return NextResponse.json({
-    hero,
+    hero: heroTrack,
     top10,
     releases,
     all: all ?? [],
