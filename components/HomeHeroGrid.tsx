@@ -9,7 +9,7 @@ export default function HomeHeroGrid() {
       {/* LEFT: HERO */}
       <div className="relative aspect-[2/1] bg-neutral-900 overflow-hidden">
         <Image
-          src="/placeholder/hero.jpg"
+          src="/hero/hero-home-main.webp"
           alt="Mystical Roots Hero"
           fill
           className="object-cover"
