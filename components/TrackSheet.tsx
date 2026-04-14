@@ -27,9 +27,13 @@ export default function TrackSheet({
   const waveformRef = useRef<HTMLDivElement | null>(null);
   const waveSurfer = useRef<WaveSurfer | null>(null);
 
+  const PREVIEW_LIMIT = 30; // seconds
+
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [ready, setReady] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const previewUrl = track?.preview_path
     ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/previews/${track.preview_path}`
@@ -63,8 +67,20 @@ export default function TrackSheet({
     waveSurfer.current = ws;
     ws.setVolume(volume);
 
-    ws.on("ready", () => setReady(true));
+    ws.on("ready", () => {
+      setReady(true);
+      setDuration(ws.getDuration());
+    });
     ws.on("finish", () => setPlaying(false));
+    ws.on("timeupdate", (time: number) => {
+      setCurrentTime(time);
+      if (time >= PREVIEW_LIMIT) {
+        ws.pause();
+        ws.seekTo(0);
+        setPlaying(false);
+        setCurrentTime(0);
+      }
+    });
 
     try {
       ws.load(previewUrl);
@@ -106,6 +122,12 @@ export default function TrackSheet({
       image: track.cover_path ? getCoverUrl(track.cover_path) : undefined,
       type: "track",
     });
+  }
+
+  function formatTime(s: number) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
   }
 
   if (!track) return null;
@@ -159,6 +181,14 @@ export default function TrackSheet({
 
           {/* Waveform */}
           <div ref={waveformRef} className="rounded-lg overflow-hidden" />
+
+          {/* Time + preview limit */}
+          {ready && (
+            <div className="flex justify-between text-xs text-neutral-500">
+              <span>{formatTime(currentTime)} / {formatTime(Math.min(PREVIEW_LIMIT, duration))}</span>
+              <span>{PREVIEW_LIMIT}s preview</span>
+            </div>
+          )}
 
           {/* Controls */}
           <div className="flex items-center gap-4 flex-wrap">

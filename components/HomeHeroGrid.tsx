@@ -1,19 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import ArtistCarousel from "./ArtistCarousel";
 
 export default function HomeHeroGrid() {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-1">
       {/* LEFT: HERO */}
-      <div className="relative aspect-[2/1] bg-neutral-900 overflow-hidden">
-        <Image
+      <div className="relative aspect-2/1 bg-neutral-900 overflow-hidden">
+        <img
           src="/hero/hero-home-main.webp"
           alt="Mystical Roots Hero"
-          fill
-          className="object-cover"
-          priority
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Overlay with gradient */}
