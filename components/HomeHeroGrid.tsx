@@ -59,10 +59,6 @@ export default function HomeHeroGrid() {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Black overlay for caption legibility */}
-          <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
-
           {/* Caption */}
           <div className="absolute inset-0 flex items-end">
             <div className="p-6 sm:p-10 space-y-2 max-w-2xl">
