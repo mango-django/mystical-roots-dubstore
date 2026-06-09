@@ -179,7 +179,7 @@ function VipContent() {
                     />
                   ) : (
                     <Image
-                      src="/placeholder/thumb.jpg"
+                      src="/placeholder/thumbnail.jpg"
                       alt="Placeholder"
                       width={400}
                       height={400}
@@ -222,7 +222,7 @@ function VipContent() {
                     />
                   ) : (
                     <Image
-                      src="/placeholder/thumb.jpg"
+                      src="/placeholder/thumbnail.jpg"
                       alt="Placeholder"
                       width={400}
                       height={400}
