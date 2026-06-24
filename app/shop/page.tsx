@@ -182,8 +182,8 @@ export default function ShopPage() {
               <div
                 key={i}
                 onClick={() => track && openTrackSheet(track)}
-                className={`group cursor-pointer bg-neutral-900 rounded-xl overflow-hidden ${
-                  !track ? "opacity-30" : ""
+                className={`group bg-neutral-900 rounded-xl overflow-hidden ${
+                  track ? "cursor-pointer" : ""
                 }`}
               >
                 <div className="aspect-square overflow-hidden">
@@ -194,13 +194,11 @@ export default function ShopPage() {
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <Image
-                      src="/placeholder/thumbnail.jpg"
-                      alt="Placeholder"
-                      width={400}
-                      height={400}
-                      className="object-cover w-full h-full"
-                    />
+                    <div className="w-full h-full flex items-center justify-center bg-neutral-900 border border-neutral-800/60">
+                      <span className="text-xs uppercase tracking-widest text-neutral-600">
+                        Coming Soon
+                      </span>
+                    </div>
                   )}
                 </div>
                 {track && (
