@@ -28,6 +28,12 @@ const SLIDES: Slide[] = [
     title: "Rastafari Heritage",
     subtitle: "Sound system culture and conscious music from the ends.",
   },
+  {
+    src: "/webp/his_majesty_by_ezy_star_promo.webp",
+    eyebrow: "Featured Release",
+    title: "Out Now in the Dub Store",
+    subtitle: "Ezy Star — His Majesty. Stream the preview, own the track.",
+  },
 ];
 
 const INTERVAL = 6000;
