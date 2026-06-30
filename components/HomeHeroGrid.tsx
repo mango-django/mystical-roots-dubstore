@@ -36,10 +36,7 @@ const SLIDES: Slide[] = [
   },
   {
     src: "/webp/his_majesty_by_ezy_star_promo.webp",
-    alt: "Out Now in the Dub Store",
-    eyebrow: "Featured Release",
-    title: "Out Now in the Dub Store",
-    subtitle: "Ezy Star — His Majesty. Stream the preview, own the track.",
+    alt: "Ezy Star — His Majesty, out now in the Dub Store",
   },
 ];
 
@@ -57,7 +54,7 @@ export default function HomeHeroGrid() {
   }, []);
 
   return (
-    <section className="relative w-full aspect-video sm:aspect-2/1 lg:aspect-12/5 bg-neutral-900 overflow-hidden">
+    <section className="relative w-full aspect-video bg-black overflow-hidden">
       {/* Single page h1 for SEO/accessibility, regardless of active slide */}
       <h1 className="sr-only">Mystical Roots Warrior</h1>
 
@@ -72,7 +69,7 @@ export default function HomeHeroGrid() {
           <img
             src={slide.src}
             alt={slide.alt}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
           />
 
           {/* Caption (omitted for self-contained promo art) */}
