@@ -74,12 +74,24 @@ export async function POST(req: Request) {
     /* =============================
        CREATE ORDER
     ============================= */
+    // Shipping address (only present for physical/merch orders). Stripe moved
+    // this between API versions, so check both locations.
+    const shipping =
+      (session as any).collected_information?.shipping_details ??
+      (session as any).shipping_details ??
+      null;
+
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
         user_id: userId,
         stripe_session_id: session.id,
         total: session.amount_total,
+        shipping_total: (session as any).shipping_cost?.amount_total ?? null,
+        email: session.customer_details?.email ?? session.customer_email ?? null,
+        shipping_name: shipping?.name ?? session.customer_details?.name ?? null,
+        shipping_address:
+          shipping?.address ?? session.customer_details?.address ?? null,
       })
       .select()
       .single();

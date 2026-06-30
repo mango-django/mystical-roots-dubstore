@@ -11,6 +11,10 @@ export default function CartDrawer({
 }) {
   const { items, removeItem, total } = useCart();
 
+  const POSTAGE = 3;
+  const hasMerch = items.some((i) => i.type === "merch");
+  const orderTotal = total + (hasMerch ? POSTAGE : 0);
+
   if (!open) return null;
 
   return (
@@ -74,10 +78,20 @@ export default function CartDrawer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-neutral-800/60 pt-5 space-y-4 mt-4">
-          <div className="flex justify-between text-sm font-medium">
-            <span className="text-neutral-400">Total</span>
+        <div className="border-t border-neutral-800/60 pt-5 space-y-3 mt-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-neutral-500">Subtotal</span>
             <span>&pound;{total.toFixed(2)}</span>
+          </div>
+          {hasMerch && (
+            <div className="flex justify-between text-sm">
+              <span className="text-neutral-500">Postage &amp; packaging</span>
+              <span>&pound;{POSTAGE.toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-sm font-semibold pt-2 border-t border-neutral-800/40">
+            <span>Total</span>
+            <span>&pound;{orderTotal.toFixed(2)}</span>
           </div>
 
           <button

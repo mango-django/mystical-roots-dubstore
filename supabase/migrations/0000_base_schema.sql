@@ -86,7 +86,11 @@ create table if not exists public.orders (
   id                  uuid primary key default gen_random_uuid(),
   user_id             uuid references auth.users(id) on delete set null,
   stripe_session_id   text,
-  total               integer,                          -- pence
+  total               integer,                          -- pence (incl. shipping)
+  shipping_total      integer,                          -- pence (postage & packaging)
+  email               text,
+  shipping_name       text,
+  shipping_address    jsonb,                            -- Stripe address object
   created_at          timestamptz not null default now()
 );
 create index if not exists idx_orders_user on public.orders (user_id);

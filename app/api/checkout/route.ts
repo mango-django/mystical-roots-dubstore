@@ -107,11 +107,35 @@ export async function POST(req: Request) {
     );
   }
 
+  const hasMerch = merchVariantIds.length > 0;
+
   const session = await stripe.checkout.sessions.create({
   mode: "payment",
   payment_method_types: ["card"],
   customer_email: user.email!,
   line_items,
+
+  // Physical merch: collect a delivery address and charge flat £3 P&P.
+  // Digital-only orders skip shipping entirely.
+  ...(hasMerch
+    ? {
+        shipping_address_collection: { allowed_countries: ["GB"] },
+        phone_number_collection: { enabled: true },
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: "fixed_amount" as const,
+              fixed_amount: { amount: 300, currency: "gbp" },
+              display_name: "Postage & Packaging",
+              delivery_estimate: {
+                minimum: { unit: "business_day" as const, value: 3 },
+                maximum: { unit: "business_day" as const, value: 7 },
+              },
+            },
+          },
+        ],
+      }
+    : {}),
 
   // 🔑 MUST be here
   metadata: {

@@ -68,9 +68,21 @@ export default function CheckoutPage() {
             ))}
           </div>
 
+          {items.some((i) => i.type === "merch") && (
+            <div className="flex justify-between text-neutral-400">
+              <span>Postage &amp; packaging</span>
+              <span>£3.00</span>
+            </div>
+          )}
+
           <div className="flex justify-between text-lg">
             <strong>Total</strong>
-            <strong>£{total.toFixed(2)}</strong>
+            <strong>
+              £
+              {(
+                total + (items.some((i) => i.type === "merch") ? 3 : 0)
+              ).toFixed(2)}
+            </strong>
           </div>
 
           <button
