@@ -189,7 +189,7 @@ export default function ShopPage() {
                   group ? "cursor-pointer" : ""
                 }`}
               >
-                <div className="relative aspect-square overflow-hidden">
+                <div className="aspect-square overflow-hidden">
                   {group?.cover_path ? (
                     <img
                       src={getCoverUrl(group.cover_path)}
@@ -203,18 +203,16 @@ export default function ShopPage() {
                       </span>
                     </div>
                   )}
-
-                  {/* Versions badge */}
-                  {group && group.mixes.length > 1 && (
-                    <span className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
-                      {group.mixes.length} mixes
-                    </span>
-                  )}
                 </div>
                 {group && (
                   <div className="p-3">
                     <p className="text-sm font-medium truncate">{group.title}</p>
                     <p className="text-xs text-neutral-500 truncate">{group.artist}</p>
+                    {group.mixes.length > 1 && (
+                      <span className="inline-block mt-2 bg-neutral-800 text-neutral-300 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                        {group.mixes.length} Mixes
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
