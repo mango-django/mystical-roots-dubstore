@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <main>
       {/* HERO GRID — full bleed, no container constraint */}
-      <section className="pt-16">
+      <section className="pt-20">
         <HomeHeroGrid />
       </section>
 

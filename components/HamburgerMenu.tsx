@@ -38,7 +38,7 @@ export default function HamburgerMenu({
         onClick={() => setOpen(true)}
         aria-label="Open menu"
         className="
-          fixed top-3.5 right-4 z-50
+          fixed top-4 right-4 z-50
           w-12 h-12
           rounded-full
           bg-neutral-900/90 backdrop-blur-sm border border-neutral-700/50

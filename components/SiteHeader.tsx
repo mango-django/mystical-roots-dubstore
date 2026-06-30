@@ -9,15 +9,16 @@ export default function SiteHeader({
 }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-30 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <span
-            className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-white"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.08em" }}
-          >
-            Mystical Roots Warrior
-          </span>
+        <Link href="/" className="flex items-center group">
+          <img
+            src="/logos/mysticalrootswarrior_header_logo.webp"
+            alt="Mystical Roots Warrior"
+            width={631}
+            height={258}
+            className="h-12 w-auto"
+          />
         </Link>
 
         {/* Desktop Nav */}
