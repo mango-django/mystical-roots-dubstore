@@ -24,11 +24,8 @@ const SLIDES: Slide[] = [
     subtitle: "Roots. Culture. Sound.",
   },
   {
-    src: "/webp/mystical-roots-splash-01.webp",
-    alt: "No Gatekeepers",
-    eyebrow: "Independent Music",
-    title: "No Gatekeepers",
-    subtitle: "New reggae & roots, released direct from the artists.",
+    src: "/hero/dubstore-hero.webp",
+    alt: "Dub Store — register now for VIP access to dubs",
   },
   {
     src: "/webp/sellassi-mural.webp",
