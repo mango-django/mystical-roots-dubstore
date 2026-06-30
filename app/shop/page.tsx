@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { openTrackSheet } from "@/lib/openTrackSheet";
+import {
+  baseTitle,
+  groupByBaseTitle,
+  type ReleaseGroup,
+} from "@/lib/releaseGroups";
 
 type Track = {
   id: string;
@@ -19,19 +24,6 @@ type Track = {
   is_release: boolean;
 };
 
-type ReleaseGroup = {
-  key: string;
-  title: string;
-  artist: string;
-  cover_path: string | null;
-  mixes: Track[];
-};
-
-// "Just About Life (Radio Edit)" -> "Just About Life"
-function baseTitle(title: string) {
-  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
-}
-
 export default function ShopPage() {
   const [hero, setHero] = useState<Track | null>(null);
   const [releases, setReleases] = useState<Track[]>([]);
@@ -44,29 +36,10 @@ export default function ShopPage() {
   }
 
   // Group release mixes that share a base title under one cover.
-  const groups = useMemo<ReleaseGroup[]>(() => {
-    const map = new Map<string, ReleaseGroup>();
-    for (const t of releases) {
-      const key = baseTitle(t.title);
-      if (!map.has(key)) {
-        map.set(key, {
-          key,
-          title: key,
-          artist: t.artist,
-          cover_path: t.cover_path,
-          mixes: [],
-        });
-      }
-      map.get(key)!.mixes.push(t);
-    }
-    // Put the bare "Original" mix first within each group.
-    for (const g of map.values()) {
-      g.mixes.sort(
-        (a, b) => (/\(/.test(a.title) ? 1 : 0) - (/\(/.test(b.title) ? 1 : 0)
-      );
-    }
-    return [...map.values()];
-  }, [releases]);
+  const groups = useMemo<ReleaseGroup[]>(
+    () => groupByBaseTitle(releases),
+    [releases]
+  );
 
   function openGroup(g: ReleaseGroup) {
     openTrackSheet({
