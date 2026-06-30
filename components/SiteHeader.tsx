@@ -24,6 +24,12 @@ export default function SiteHeader({
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium uppercase tracking-wider">
           <Link
+            href="/"
+            className="text-neutral-400 hover:text-white transition-colors"
+          >
+            Home
+          </Link>
+          <Link
             href="/artists"
             className="text-neutral-400 hover:text-white transition-colors"
           >
