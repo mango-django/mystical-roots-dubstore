@@ -116,7 +116,8 @@ create table if not exists public.merch_order_items (
   title       text,
   colour      text,
   size        text,
-  price       integer,
+  price       integer,                                  -- unit price (pence)
+  quantity    integer not null default 1,
   created_at  timestamptz not null default now()
 );
 create index if not exists idx_merch_order_items_order on public.merch_order_items (order_id);

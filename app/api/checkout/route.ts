@@ -38,9 +38,15 @@ export async function POST(req: Request) {
     .filter((item: any) => item?.type !== "merch")
     .map((item: any) => item.id);
 
-  const merchVariantIds = items
-    .filter((item: any) => item?.type === "merch")
-    .map((item: any) => item.id);
+  const merchItems = items.filter((item: any) => item?.type === "merch");
+  const merchVariantIds = merchItems.map((item: any) => item.id);
+
+  // variant id -> quantity (clamped to a sane range)
+  const qtyById = new Map<string, number>();
+  for (const item of merchItems) {
+    const qty = Math.min(99, Math.max(1, Number(item.quantity) || 1));
+    qtyById.set(item.id, (qtyById.get(item.id) ?? 0) + qty);
+  }
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
@@ -95,7 +101,7 @@ export async function POST(req: Request) {
           },
           unit_amount: variant.price,
         },
-        quantity: 1,
+        quantity: qtyById.get(variant.id) ?? 1,
       }))
     );
   }
@@ -108,6 +114,11 @@ export async function POST(req: Request) {
   }
 
   const hasMerch = merchVariantIds.length > 0;
+
+  // Encode merch as "variantId:qty" so the webhook can record quantities.
+  const merchVariantParam = [...qtyById.entries()]
+    .map(([id, q]) => `${id}:${q}`)
+    .join(",");
 
   const session = await stripe.checkout.sessions.create({
   mode: "payment",
@@ -141,7 +152,7 @@ export async function POST(req: Request) {
   metadata: {
     user_id: user.id,
     track_ids: trackIds.join(","),
-    merch_variant_ids: merchVariantIds.join(","),
+    merch_variant_ids: merchVariantParam,
   },
 
   // 🔑 ALSO REQUIRED for webhook reliability
@@ -149,7 +160,7 @@ export async function POST(req: Request) {
     metadata: {
       user_id: user.id,
       track_ids: trackIds.join(","),
-      merch_variant_ids: merchVariantIds.join(","),
+      merch_variant_ids: merchVariantParam,
     },
   },
 

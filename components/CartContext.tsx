@@ -8,6 +8,7 @@ export type CartItem = {
   price: number;
   image?: string;
   type: "track" | "merch";
+  quantity: number;
 
   // merch-only
   variantId?: string;
@@ -18,10 +19,12 @@ export type CartItem = {
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (item: CartItem) => void;
+  addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
   clearCartOnLogout: () => void;
+  itemCount: number;
   total: number;
 };
 
@@ -35,7 +38,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem("cart");
     if (stored) {
       try {
-        setItems(JSON.parse(stored));
+        const parsed = JSON.parse(stored) as CartItem[];
+        // Backfill quantity for carts saved before quantity existed.
+        setItems(parsed.map((i) => ({ ...i, quantity: i.quantity ?? 1 })));
       } catch {
         localStorage.removeItem("cart");
       }
@@ -47,9 +52,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
-  function addItem(item: CartItem) {
+  function addItem(item: Omit<CartItem, "quantity"> & { quantity?: number }) {
+    const qty = item.quantity ?? 1;
     setItems((prev) => {
-      if (prev.find((i) => i.id === item.id)) return prev;
+      const existing = prev.find((i) => i.id === item.id);
+
       setTimeout(() => {
         document.dispatchEvent(
           new CustomEvent("cart-toast", {
@@ -57,8 +64,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           })
         );
       }, 0);
-      return [...prev, item];
+
+      // Tracks are digital — only ever one. Merch increments quantity.
+      if (existing) {
+        if (item.type === "track") return prev;
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + qty } : i
+        );
+      }
+
+      return [...prev, { ...item, quantity: qty }];
     });
+  }
+
+  function updateQuantity(id: string, quantity: number) {
+    setItems((prev) =>
+      prev
+        .map((i) =>
+          i.id === id ? { ...i, quantity: Math.max(0, quantity) } : i
+        )
+        .filter((i) => i.quantity > 0)
+    );
   }
 
   function removeItem(id: string) {
@@ -74,16 +100,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("cart");
   }
 
-  const total = items.reduce((sum, i) => sum + i.price, 0);
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
     <CartContext.Provider
       value={{
         items,
         addItem,
+        updateQuantity,
         removeItem,
         clearCart,
         clearCartOnLogout,
+        itemCount,
         total,
       }}
     >

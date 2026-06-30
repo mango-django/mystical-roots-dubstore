@@ -9,7 +9,7 @@ export default function CartDrawer({
   open: boolean;
   onClose: () => void;
 }) {
-  const { items, removeItem, total } = useCart();
+  const { items, removeItem, updateQuantity, total } = useCart();
 
   const POSTAGE = 3;
   const hasMerch = items.some((i) => i.type === "merch");
@@ -63,13 +63,41 @@ export default function CartDrawer({
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium">{item.title}</p>
                 <p className="text-xs text-neutral-500">
-                  &pound;{item.price.toFixed(2)}
+                  &pound;{(item.price * item.quantity).toFixed(2)}
+                  {item.quantity > 1 && (
+                    <span className="text-neutral-600">
+                      {" "}
+                      (&pound;{item.price.toFixed(2)} each)
+                    </span>
+                  )}
                 </p>
+
+                {item.type === "merch" ? (
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      aria-label="Decrease quantity"
+                      className="w-6 h-6 rounded border border-neutral-700 text-neutral-300 hover:border-neutral-500 flex items-center justify-center leading-none"
+                    >
+                      &minus;
+                    </button>
+                    <span className="text-sm tabular-nums w-5 text-center">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      aria-label="Increase quantity"
+                      className="w-6 h-6 rounded border border-neutral-700 text-neutral-300 hover:border-neutral-500 flex items-center justify-center leading-none"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : null}
               </div>
 
               <button
                 onClick={() => removeItem(item.id)}
-                className="text-xs text-neutral-500 hover:text-red-400 transition-colors"
+                className="text-xs text-neutral-500 hover:text-red-400 transition-colors self-start"
               >
                 Remove
               </button>

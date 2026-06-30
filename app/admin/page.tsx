@@ -26,6 +26,26 @@ export default function AdminPage() {
             </p>
           </Link>
 
+          <Link
+            href="/admin/tracks"
+            className="surface p-4 hover:bg-neutral-800 transition"
+          >
+            <h3 className="uppercase text-sm tracking-widest">Tracks</h3>
+            <p className="text-sm opacity-60 mt-1">
+              Manage releases, Top 10, hero &amp; exclusives
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/orders"
+            className="surface p-4 hover:bg-neutral-800 transition"
+          >
+            <h3 className="uppercase text-sm tracking-widest">Orders</h3>
+            <p className="text-sm opacity-60 mt-1">
+              View merch orders &amp; shipping addresses to fulfil
+            </p>
+          </Link>
+
         </div>
       </main>
     </ProtectedRoute>

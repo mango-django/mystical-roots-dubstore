@@ -62,11 +62,18 @@ export async function POST(req: Request) {
     const trackIds = session.metadata?.track_ids
       ?.split(",")
       .filter(Boolean);
-    const merchVariantIds = session.metadata?.merch_variant_ids
-      ?.split(",")
-      .filter(Boolean);
+    // merch_variant_ids is encoded as "variantId:qty,variantId:qty".
+    const merchEntries = (session.metadata?.merch_variant_ids ?? "")
+      .split(",")
+      .filter(Boolean)
+      .map((token) => {
+        const [id, qty] = token.split(":");
+        return { id, qty: Math.max(1, Number(qty) || 1) };
+      });
+    const merchVariantIds = merchEntries.map((e) => e.id);
+    const qtyById = new Map(merchEntries.map((e) => [e.id, e.qty]));
 
-    if (!userId || (!trackIds?.length && !merchVariantIds?.length)) {
+    if (!userId || (!trackIds?.length && !merchVariantIds.length)) {
       console.warn("⚠️ Missing metadata — skipping purchase creation");
       return NextResponse.json({ received: true });
     }
@@ -153,6 +160,7 @@ export async function POST(req: Request) {
         order_id: order.id,
         variant_id: variant.id,
         product_id: variant.product_id,
+        quantity: qtyById.get(variant.id) ?? 1,
         title: variant.merch_products?.title ?? "Merch",
         colour: variant.colour,
         size: variant.size,
