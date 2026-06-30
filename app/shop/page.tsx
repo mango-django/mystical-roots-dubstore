@@ -36,7 +36,8 @@ export default function ShopPage() {
       const { data } = await supabase
         .from("tracks")
         .select("*")
-        .eq("is_exclusive", false);
+        .eq("is_exclusive", false)
+        .order("created_at", { ascending: true });
       if (!data) return;
 
       setHero(data.find((t) => t.is_hero) ?? null);
@@ -48,7 +49,7 @@ export default function ShopPage() {
           .slice(0, 10)
       );
 
-      setReleases(data.filter((t) => t.is_release).slice(0, 10));
+      setReleases(data.filter((t) => t.is_release));
     }
     load();
   }, []);
@@ -176,7 +177,7 @@ export default function ShopPage() {
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {Array.from({ length: 10 }).map((_, i) => {
+          {Array.from({ length: Math.max(releases.length, 5) }).map((_, i) => {
             const track = releases[i];
             return (
               <div
