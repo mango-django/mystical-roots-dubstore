@@ -81,7 +81,7 @@ export default function ShopPage() {
         <p className="text-xs font-medium uppercase tracking-widest text-neutral-500 mb-2">
           Browse & Preview
         </p>
-        <h1>Dub Store</h1>
+        <h1>Music Store</h1>
       </div>
 
       {/* ===== VIP DUB SECTION BANNER ===== */}
