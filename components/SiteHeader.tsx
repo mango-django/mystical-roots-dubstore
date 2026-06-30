@@ -13,10 +13,10 @@ export default function SiteHeader({
         {/* Brand */}
         <Link href="/" className="flex items-center group">
           <img
-            src="/logos/mysticalrootswarrior_header_logo.webp"
+            src="/logos/mysticalrootswarrior_header_logo.png"
             alt="Mystical Roots Warrior"
-            width={631}
-            height={258}
+            width={614}
+            height={290}
             className="h-12 w-auto"
           />
         </Link>
