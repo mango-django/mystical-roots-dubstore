@@ -86,21 +86,21 @@ function VipContent() {
       {/* ===== FEATURED DUB HERO (full width) ===== */}
       <section
         onClick={openHero}
-        className="relative cursor-pointer bg-neutral-900 overflow-hidden rounded-xl"
+        className="relative aspect-76/35 cursor-pointer bg-neutral-900 overflow-hidden rounded-xl"
       >
         {hero?.cover_path ? (
           <img
             src={getCoverUrl(hero.cover_path)}
             alt={hero.title}
-            className="w-full h-125 lg:h-140 object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
           <Image
             src="/placeholder/hero.jpg"
             alt="Hero placeholder"
-            width={1600}
-            height={700}
-            className="object-cover w-full h-125 lg:h-140"
+            width={2432}
+            height={1120}
+            className="absolute inset-0 w-full h-full object-cover"
           />
         )}
 
