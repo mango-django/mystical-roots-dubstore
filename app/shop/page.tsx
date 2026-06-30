@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { openTrackSheet } from "@/lib/openTrackSheet";
 
@@ -19,6 +19,19 @@ type Track = {
   is_release: boolean;
 };
 
+type ReleaseGroup = {
+  key: string;
+  title: string;
+  artist: string;
+  cover_path: string | null;
+  mixes: Track[];
+};
+
+// "Just About Life (Radio Edit)" -> "Just About Life"
+function baseTitle(title: string) {
+  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
 export default function ShopPage() {
   const [hero, setHero] = useState<Track | null>(null);
   const [releases, setReleases] = useState<Track[]>([]);
@@ -28,6 +41,49 @@ export default function ShopPage() {
     if (/^https?:\/\//i.test(coverPath)) return coverPath;
     const normalized = coverPath.replace(/^\/+/, "");
     return `${supabaseUrl}/storage/v1/object/public/covers/${normalized}`;
+  }
+
+  // Group release mixes that share a base title under one cover.
+  const groups = useMemo<ReleaseGroup[]>(() => {
+    const map = new Map<string, ReleaseGroup>();
+    for (const t of releases) {
+      const key = baseTitle(t.title);
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          title: key,
+          artist: t.artist,
+          cover_path: t.cover_path,
+          mixes: [],
+        });
+      }
+      map.get(key)!.mixes.push(t);
+    }
+    // Put the bare "Original" mix first within each group.
+    for (const g of map.values()) {
+      g.mixes.sort(
+        (a, b) => (/\(/.test(a.title) ? 1 : 0) - (/\(/.test(b.title) ? 1 : 0)
+      );
+    }
+    return [...map.values()];
+  }, [releases]);
+
+  function openGroup(g: ReleaseGroup) {
+    openTrackSheet({
+      title: g.title,
+      artist: g.artist,
+      cover_path: g.cover_path,
+      format: g.mixes[0]?.format,
+      price: g.mixes[0]?.price,
+      mixes: g.mixes,
+    });
+  }
+
+  function openHero() {
+    if (!hero) return;
+    const g = groups.find((g) => g.key === baseTitle(hero.title));
+    if (g) openGroup(g);
+    else openTrackSheet(hero);
   }
 
   useEffect(() => {
@@ -81,7 +137,7 @@ export default function ShopPage() {
 
       {/* ===== FEATURED HERO (full width) ===== */}
       <section
-        onClick={() => hero && openTrackSheet(hero)}
+        onClick={openHero}
         className="relative cursor-pointer bg-neutral-900 overflow-hidden rounded-xl"
       >
         {hero?.cover_path ? (
@@ -123,21 +179,21 @@ export default function ShopPage() {
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {Array.from({ length: Math.max(releases.length, 5) }).map((_, i) => {
-            const track = releases[i];
+          {Array.from({ length: Math.max(groups.length, 5) }).map((_, i) => {
+            const group = groups[i];
             return (
               <div
-                key={i}
-                onClick={() => track && openTrackSheet(track)}
+                key={group ? group.key : i}
+                onClick={() => group && openGroup(group)}
                 className={`group bg-neutral-900 rounded-xl overflow-hidden ${
-                  track ? "cursor-pointer" : ""
+                  group ? "cursor-pointer" : ""
                 }`}
               >
-                <div className="aspect-square overflow-hidden">
-                  {track?.cover_path ? (
+                <div className="relative aspect-square overflow-hidden">
+                  {group?.cover_path ? (
                     <img
-                      src={getCoverUrl(track.cover_path)}
-                      alt={track.title}
+                      src={getCoverUrl(group.cover_path)}
+                      alt={group.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
@@ -147,11 +203,18 @@ export default function ShopPage() {
                       </span>
                     </div>
                   )}
+
+                  {/* Versions badge */}
+                  {group && group.mixes.length > 1 && (
+                    <span className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
+                      {group.mixes.length} mixes
+                    </span>
+                  )}
                 </div>
-                {track && (
+                {group && (
                   <div className="p-3">
-                    <p className="text-sm font-medium truncate">{track.title}</p>
-                    <p className="text-xs text-neutral-500 truncate">{track.artist}</p>
+                    <p className="text-sm font-medium truncate">{group.title}</p>
+                    <p className="text-xs text-neutral-500 truncate">{group.artist}</p>
                   </div>
                 )}
               </div>

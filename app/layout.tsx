@@ -13,6 +13,12 @@ import CartDrawer from "@/components/CartDrawer";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase/client";
 
+// Defined at module scope so the component identity is stable across renders —
+// otherwise the sheet remounts (losing its selected version) on every toast.
+const TrackSheet = dynamic(() => import("@/components/TrackSheet"), {
+  ssr: false,
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -22,10 +28,6 @@ export default function RootLayout({
   const [cartOpen, setCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeTrack, setActiveTrack] = useState<any>(null);
-
-  const TrackSheet = dynamic(() => import("@/components/TrackSheet"), {
-    ssr: false,
-  });
 
   useEffect(() => {
     function handleOpen(e: any) {

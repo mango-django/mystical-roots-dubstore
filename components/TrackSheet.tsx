@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useCart } from "@/components/CartContext";
 
@@ -14,11 +14,19 @@ type Track = {
   cover_path?: string | null;
 };
 
+type SheetInput = Track & { mixes?: Track[] };
+
+// "Just About Life (Radio Edit)" -> "Radio Edit"; bare title -> "Original".
+function mixLabel(title: string) {
+  const m = title.match(/\(([^)]+)\)\s*$/);
+  return m ? m[1] : "Original";
+}
+
 export default function TrackSheet({
   track,
   onClose,
 }: {
-  track: Track | null;
+  track: SheetInput | null;
   onClose: () => void;
 }) {
   const { addItem } = useCart();
@@ -29,14 +37,29 @@ export default function TrackSheet({
 
   const PREVIEW_LIMIT = 30; // seconds
 
+  // Available mixes for this sheet (a single track collapses to one mix).
+  const mixes = useMemo<Track[]>(
+    () => (track?.mixes?.length ? track.mixes : track ? [track] : []),
+    [track]
+  );
+  const groupKey = mixes.map((m) => m.id).join(",");
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [ready, setReady] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const previewUrl = track?.preview_path
-    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/previews/${track.preview_path}`
+  // Reset to the first mix whenever a new release/group is opened.
+  useEffect(() => {
+    setSelectedId(mixes[0]?.id ?? null);
+  }, [groupKey]);
+
+  const current = mixes.find((m) => m.id === selectedId) ?? mixes[0] ?? null;
+
+  const previewUrl = current?.preview_path
+    ? `${supabaseUrl}/storage/v1/object/public/previews/${current.preview_path}`
     : null;
 
   function getCoverUrl(coverPath: string) {
@@ -49,7 +72,6 @@ export default function TrackSheet({
     if (!previewUrl || !waveformRef.current) return;
 
     waveformRef.current.innerHTML = "";
-
     if (waveSurfer.current) return;
 
     const ws = WaveSurfer.create({
@@ -93,6 +115,7 @@ export default function TrackSheet({
       waveSurfer.current = null;
       setReady(false);
       setPlaying(false);
+      setCurrentTime(0);
     };
   }, [previewUrl]);
 
@@ -114,12 +137,12 @@ export default function TrackSheet({
   }
 
   function handleAddToCart() {
-    if (!track) return;
+    if (!current) return;
     addItem({
-      id: track.id,
-      title: track.title,
-      price: track.price / 100,
-      image: track.cover_path ? getCoverUrl(track.cover_path) : undefined,
+      id: current.id,
+      title: current.title,
+      price: current.price / 100,
+      image: current.cover_path ? getCoverUrl(current.cover_path) : undefined,
       type: "track",
     });
   }
@@ -130,7 +153,10 @@ export default function TrackSheet({
     return `${m}:${sec.toString().padStart(2, "0")}`;
   }
 
-  if (!track) return null;
+  if (!track || !current) return null;
+
+  const cover = track.cover_path ?? current.cover_path ?? null;
+  const hasVersions = mixes.length > 1;
 
   return (
     <>
@@ -148,9 +174,9 @@ export default function TrackSheet({
             <div className="flex gap-4 items-start">
               {/* Cover thumbnail */}
               <div className="w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-neutral-800">
-                {track.cover_path ? (
+                {cover ? (
                   <img
-                    src={getCoverUrl(track.cover_path)}
+                    src={getCoverUrl(cover)}
                     alt={track.title}
                     className="w-full h-full object-cover"
                   />
@@ -166,6 +192,11 @@ export default function TrackSheet({
                   {track.title}
                 </h2>
                 <p className="text-sm text-neutral-500">{track.artist}</p>
+                {hasVersions && (
+                  <p className="text-xs text-neutral-600 mt-0.5">
+                    {mixes.length} versions
+                  </p>
+                )}
               </div>
             </div>
 
@@ -178,6 +209,28 @@ export default function TrackSheet({
               </svg>
             </button>
           </div>
+
+          {/* Version selector */}
+          {hasVersions && (
+            <div className="flex flex-wrap gap-2">
+              {mixes.map((m) => {
+                const active = m.id === current.id;
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedId(m.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      active
+                        ? "bg-white text-black border-white"
+                        : "border-neutral-700 text-neutral-300 hover:border-neutral-500"
+                    }`}
+                  >
+                    {mixLabel(m.title)}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Waveform */}
           <div ref={waveformRef} className="rounded-lg overflow-hidden" />
@@ -218,8 +271,11 @@ export default function TrackSheet({
             </div>
 
             <div className="ml-auto text-sm text-neutral-400">
-              &pound;{(track.price / 100).toFixed(2)} &middot;{" "}
-              {track.format.toUpperCase()}
+              {hasVersions && (
+                <span className="text-neutral-500">{mixLabel(current.title)} &middot; </span>
+              )}
+              &pound;{(current.price / 100).toFixed(2)} &middot;{" "}
+              {current.format.toUpperCase()}
             </div>
           </div>
         </div>
