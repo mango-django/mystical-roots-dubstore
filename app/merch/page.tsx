@@ -84,7 +84,7 @@ export default function MerchPage() {
         </p>
         <h1>Merch</h1>
         <p className="text-sm text-neutral-400 mt-3">
-          Official Mystical Roots Warrior tees &mdash; &pound;4.99 each. Flat
+          Official Mystical Roots Warrior tees &mdash; &pound;9.99 each. Flat
           &pound;3.00 postage &amp; packaging per order. UK delivery.
         </p>
       </div>
