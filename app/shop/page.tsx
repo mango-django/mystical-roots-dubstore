@@ -21,7 +21,6 @@ type Track = {
 
 export default function ShopPage() {
   const [hero, setHero] = useState<Track | null>(null);
-  const [top10, setTop10] = useState<Track[]>([]);
   const [releases, setReleases] = useState<Track[]>([]);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -41,13 +40,6 @@ export default function ShopPage() {
       if (!data) return;
 
       setHero(data.find((t) => t.is_hero) ?? null);
-
-      setTop10(
-        data
-          .filter((t) => t.top10_position !== null)
-          .sort((a, b) => (a.top10_position ?? 0) - (b.top10_position ?? 0))
-          .slice(0, 10)
-      );
 
       setReleases(data.filter((t) => t.is_release));
     }
@@ -87,87 +79,41 @@ export default function ShopPage() {
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
       </Link>
 
-      {/* ===== TOP SECTION: Hero + Top 10 ===== */}
-      <section className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        {/* HERO TRACK */}
-        <div
-          onClick={() => hero && openTrackSheet(hero)}
-          className="relative cursor-pointer bg-neutral-900 overflow-hidden rounded-xl"
-        >
-          {hero?.cover_path ? (
-            <img
-              src={getCoverUrl(hero.cover_path)}
-              alt={hero.title}
-              className="w-full h-125 lg:h-140 object-cover"
-            />
-          ) : (
-            <Image
-              src="/placeholder/hero.jpg"
-              alt="Hero placeholder"
-              width={1200}
-              height={600}
-              className="object-cover w-full h-125 lg:h-140"
-            />
-          )}
+      {/* ===== FEATURED HERO (full width) ===== */}
+      <section
+        onClick={() => hero && openTrackSheet(hero)}
+        className="relative cursor-pointer bg-neutral-900 overflow-hidden rounded-xl"
+      >
+        {hero?.cover_path ? (
+          <img
+            src={getCoverUrl(hero.cover_path)}
+            alt={hero.title}
+            className="w-full h-125 lg:h-140 object-cover"
+          />
+        ) : (
+          <Image
+            src="/placeholder/hero.jpg"
+            alt="Hero placeholder"
+            width={1600}
+            height={700}
+            className="object-cover w-full h-125 lg:h-140"
+          />
+        )}
 
-          {/* Hero overlay */}
-          {hero && (
-            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent p-6 sm:p-8 flex items-end">
-              <div className="space-y-1">
-                <p className="text-xs uppercase tracking-widest text-neutral-400">
-                  Featured Track
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-semibold">
-                  {hero.title}
-                </h2>
-                <p className="text-neutral-300 text-sm">
-                  {hero.artist}
-                </p>
-              </div>
+        {/* Hero overlay */}
+        {hero && (
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent p-6 sm:p-8 flex items-end">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-widest text-neutral-400">
+                Featured Track
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-semibold">
+                {hero.title}
+              </h2>
+              <p className="text-neutral-300 text-sm">{hero.artist}</p>
             </div>
-          )}
-        </div>
-
-        {/* TOP 10 SIDEBAR */}
-        <aside className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-5">
-          <h2 className="uppercase tracking-widest text-xs text-neutral-500 mb-5">
-            Top Mixes
-          </h2>
-
-          <ol className="space-y-1">
-            {Array.from({ length: 10 }).map((_, i) => {
-              const track = top10[i];
-              return (
-                <li
-                  key={i}
-                  onClick={() => track && openTrackSheet(track)}
-                  className={`flex gap-3 items-center px-3 py-2.5 rounded-lg transition-colors ${
-                    track
-                      ? "cursor-pointer hover:bg-neutral-800/60 text-neutral-300 hover:text-white"
-                      : "text-neutral-600"
-                  }`}
-                >
-                  <span className="w-5 text-right text-xs font-medium tabular-nums">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="truncate text-sm font-medium">
-                      {track ? track.title : "Coming Soon"}
-                    </div>
-                    <div className="truncate text-xs text-neutral-500">
-                      {track ? track.artist : "Mystical Roots"}
-                    </div>
-                  </div>
-                  {track && (
-                    <span className="text-xs text-neutral-500">
-                      {track.format.toUpperCase()}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </aside>
+          </div>
+        )}
       </section>
 
       {/* ===== NEW RELEASES ===== */}
