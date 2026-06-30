@@ -4,32 +4,42 @@ import { useEffect, useState } from "react";
 
 type Slide = {
   src: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
+  alt: string;
+  // Optional caption — slides that are self-contained promo art omit it.
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
 };
 
 const SLIDES: Slide[] = [
   {
+    src: "/hero/hero4.webp",
+    alt: "Ezy Star — His Majesty, out now on all digital platforms",
+  },
+  {
     src: "/hero/hero-home-main.webp",
+    alt: "Mystical Roots Warrior",
     eyebrow: "South London Reggae & Roots",
     title: "Mystical Roots Warrior",
     subtitle: "Roots. Culture. Sound.",
   },
   {
     src: "/webp/mystical-roots-splash-01.webp",
+    alt: "No Gatekeepers",
     eyebrow: "Independent Music",
     title: "No Gatekeepers",
     subtitle: "New reggae & roots, released direct from the artists.",
   },
   {
     src: "/webp/sellassi-mural.webp",
+    alt: "Rastafari Heritage",
     eyebrow: "Honour the Roots",
     title: "Rastafari Heritage",
     subtitle: "Sound system culture and conscious music from the ends.",
   },
   {
     src: "/webp/his_majesty_by_ezy_star_promo.webp",
+    alt: "Out Now in the Dub Store",
     eyebrow: "Featured Release",
     title: "Out Now in the Dub Store",
     subtitle: "Ezy Star — His Majesty. Stream the preview, own the track.",
@@ -51,6 +61,9 @@ export default function HomeHeroGrid() {
 
   return (
     <section className="relative w-full aspect-video sm:aspect-2/1 lg:aspect-12/5 bg-neutral-900 overflow-hidden">
+      {/* Single page h1 for SEO/accessibility, regardless of active slide */}
+      <h1 className="sr-only">Mystical Roots Warrior</h1>
+
       {SLIDES.map((slide, i) => (
         <div
           key={slide.src}
@@ -61,30 +74,30 @@ export default function HomeHeroGrid() {
         >
           <img
             src={slide.src}
-            alt={slide.title}
+            alt={slide.alt}
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Caption */}
-          <div className="absolute inset-0 flex items-end">
-            <div className="p-6 sm:p-10 space-y-2 max-w-2xl">
-              <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-amber-400/90">
-                {slide.eyebrow}
-              </p>
-              {i === 0 ? (
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white drop-shadow-lg">
-                  {slide.title}
-                </h1>
-              ) : (
+          {/* Caption (omitted for self-contained promo art) */}
+          {slide.title && (
+            <div className="absolute inset-0 flex items-end">
+              <div className="p-6 sm:p-10 space-y-2 max-w-2xl">
+                {slide.eyebrow && (
+                  <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-amber-400/90">
+                    {slide.eyebrow}
+                  </p>
+                )}
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl text-white drop-shadow-lg">
                   {slide.title}
                 </h2>
-              )}
-              <p className="text-neutral-200 text-sm sm:text-base max-w-md drop-shadow">
-                {slide.subtitle}
-              </p>
+                {slide.subtitle && (
+                  <p className="text-neutral-200 text-sm sm:text-base max-w-md drop-shadow">
+                    {slide.subtitle}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ))}
 
